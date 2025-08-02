@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cybersecurity OSINT Tool</title>
+
+  <!-- Google Analytics (replace G-XXXXXXXXXX with your ID) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX', { 'anonymize_ip': true });
+  </script>
+
+  <!-- Updated CSP to allow Google Analytics -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com;">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1e1e2f;
+      color: #c2ffd2;
+      max-width: 700px;
+      margin: auto;
+      padding: 2em;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,255,200,0.05);
+    }
+
+    h1, h2 {
+      color: #aafaff;
+      border-bottom: 2px dashed #72ffe1;
+      padding-bottom: 5px;
+      text-shadow: 0 0 5px #00ffc8;
+    }
+
+    form {
+      margin-bottom: 2em;
+    }
+
+    input, select, button {
+      padding: 12px;
+      width: 100%;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #2a2a3d;
+      color: #d8fff7;
+      font-size: 16px;
+      box-shadow: inset 0 0 5px rgba(0,255,255,0.1);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      box-shadow: 0 0 5px #00ffe7;
+    }
+
+    button {
+      background-color: #00ffc8;
+      color: #002f2f;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #5fffe0;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #afffe3;
+    }
+
+    .note {
+      font-size: 0.85em;
+      color: #77ffcc;
+      margin-top: 20px;
+    }
+
+    .infoBox {
+      background-color: #2e2e42;
+      border-left: 4px solid #00ffc8;
+      padding: 1em;
+      margin-top: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,255,200,0.1);
+    }
+
+    .infoBox a {
+      color: #89ffff;
+      word-break: break-word;
+      display: block;
+      margin-top: 10px;
+      text-decoration: underline;
+    }
+
+    .infoBox code {
+      display: block;
+      margin-top: 5px;
+      font-size: 0.85em;
+      color: #c9f8ff;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🛡️ AKTechzero OSINT Tool</h1>
+  <p>This tool helps you investigate phone numbers and usernames using Google dorking and WhatsApp lookup.</p>
+
+  <form id="osintForm">
+    <label for="inputValue">Enter phone number, email, or username:</label>
+    <input type="text" id="inputValue" placeholder="+1XXXXXXXXXX, email@example.com, or @username" required>
+
+    <label for="platformSelect">Select platform to investigate:</label>
+    <select id="platformSelect" required>
+      <option disabled selected value="">-- Choose a platform --</option>
+      <option value="site:facebook.com">Facebook</option>
+      <option value="site:twitter.com">Twitter</option>
+      <option value="site:linkedin.com/in">LinkedIn</option>
+      <option value="site:instagram.com">Instagram</option>
+      <option value="site:pinterest.com">Pinterest</option>
+      <option value="site:tiktok.com">TikTok</option>
+      <option value="site:reddit.com">Reddit</option>
+    </select>
+
+    <label>
+      <input type="checkbox" id="checkWhatsApp" style="width:auto; margin-right: 10px;">
+      Include WhatsApp OSINT
+    </label>
+
+    <button type="submit">🔍 Generate OSINT Links</button>
+  </form>
+
+  <div id="phoneInfo" class="infoBox" style="display:none;">
+    <h2>🌍 Input Info</h2>
+    <p id="infoResult"></p>
+  </div>
+
+  <div id="resultLink" class="infoBox" style="display:none;">
+    <h2>🔗 Google Dork Search</h2>
+    <a id="generatedLink" href="#" target="_blank" rel="noopener noreferrer">Open Google Search</a>
+    <code id="linkPreview"></code>
+  </div>
+
+  <div id="whatsAppLink" class="infoBox" style="display:none;">
+    <h2>📱 WhatsApp OSINT Link</h2>
+    <a id="waLink" href="#" target="_blank" rel="noopener noreferrer">Open WhatsApp Web for Number</a>
+    <code id="waPreview"></code>
+  </div>
+
+  <p class="note">
+    ⚠️ This tool uses only public Google queries and open URLs. No data is stored or scraped.
+  </p>
+
+  <script>
+    function getCountryFromPrefix(phone) {
+      const countryMap = {
+        '+1': 'United States / Canada 🇺🇸🇨🇦',
+        '+44': 'United Kingdom 🇬🇧',
+        '+91': 'India 🇮🇳',
+        '+81': 'Japan 🇯🇵',
+        '+49': 'Germany 🇩🇪',
+        '+33': 'France 🇫🇷',
+        '+61': 'Australia 🇦🇺',
+        '+55': 'Brazil 🇧🇷',
+        '+86': 'China 🇨🇳',
+        '+7': 'Russia 🇷🇺'
+      };
+
+      for (const prefix in countryMap) {
+        if (phone.startsWith(prefix)) {
+          return countryMap[prefix];
+        }
+      }
+      return 'Unknown Country 🌍';
+    }
+
+    function displayBasicPhoneInfo(phone) {
+      const country = getCountryFromPrefix(phone);
+      const isValid = phone.match(/^\+\d{7,15}$/); // simple E.164 validation
+
+      document.getElementById('phoneInfo').style.display = 'block';
+      document.getElementById('infoResult').innerHTML = isValid
+        ? `📞 <strong>Number:</strong> ${phone}<br>
+           🌐 <strong>Country:</strong> ${country}<br>
+           🔎 <strong>Type:</strong> N/A (Regex only)`
+        : '❌ Invalid phone number.';
+    }
+
+    document.getElementById('osintForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const input = document.getElementById('inputValue').value.trim();
+      const platform = document.getElementById('platformSelect').value;
+      const includeWhatsApp = document.getElementById('checkWhatsApp').checked;
+
+      // Reset displays
+      document.getElementById('phoneInfo').style.display = 'none';
+      document.getElementById('resultLink').style.display = 'none';
+      document.getElementById('whatsAppLink').style.display = 'none';
+
+      const isPhone = input.startsWith('+') && /^\+\d{7,15}$/.test(input);
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
+
+      let query = `${platform} "${input}"`;
+
+      if (isPhone) {
+        displayBasicPhoneInfo(input);
+
+        if (includeWhatsApp) {
+          const phoneOnlyDigits = input.replace(/\D/g, '');
+          const waURL = `https://wa.me/${phoneOnlyDigits}`;
+          document.getElementById('whatsAppLink').style.display = 'block';
+          document.getElementById('waLink').href = waURL;
+          document.getElementById('waPreview').textContent = waURL;
+
+          query += ` OR site:wa.me "${input}" OR "WhatsApp" "${input}"`;
+        }
+      } else if (isEmail) {
+        document.getElementById('phoneInfo').style.display = 'block';
+        document.getElementById('infoResult').innerHTML = `📧 <strong>Email:</strong> ${input}`;
+      } else {
+        document.getElementById('phoneInfo').style.display = 'block';
+        document.getElementById('infoResult').innerHTML = `🔎 <strong>Input:</strong> ${input}`;
+      }
+
+      if (input && platform) {
+        const googleURL = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+        document.getElementById('resultLink').style.display = 'block';
+        document.getElementById('generatedLink').href = googleURL;
+        document.getElementById('linkPreview').textContent = googleURL;
+      }
+    });
+  </script>
+
+</body>
+</html>

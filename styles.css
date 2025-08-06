@@ -1,0 +1,118 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #1e1e2f;
+  color: #c2ffd2;
+  max-width: 700px;
+  margin: auto;
+  padding: 2em;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,255,200,0.05);
+}
+
+h1, h2 {
+  color: #aafaff;
+  border-bottom: 2px dashed #72ffe1;
+  padding-bottom: 5px;
+  text-shadow: 0 0 5px #00ffc8;
+}
+
+form {
+  margin-bottom: 2em;
+}
+
+input, select, button {
+  padding: 12px;
+  width: 100%;
+  margin-top: 10px;
+  border: none;
+  border-radius: 8px;
+  background-color: #2a2a3d;
+  color: #d8fff7;
+  font-size: 16px;
+  box-shadow: inset 0 0 5px rgba(0,255,255,0.1);
+}
+
+input:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 5px #00ffe7;
+}
+
+button {
+  background-color: #00ffc8;
+  color: #002f2f;
+  font-weight: bold;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #5fffe0;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+  color: #afffe3;
+}
+
+.note {
+  font-size: 0.85em;
+  color: #77ffcc;
+  margin-top: 20px;
+}
+
+.infoBox {
+  background-color: #2e2e42;
+  border-left: 4px solid #00ffc8;
+  padding: 1em;
+  margin-top: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,255,200,0.1);
+}
+
+.infoBox a {
+  color: #89ffff;
+  word-break: break-word;
+  display: block;
+  margin-top: 10px;
+  text-decoration: underline;
+}
+
+.infoBox code {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.85em;
+  color: #c9f8ff;
+  word-break: break-word;
+}
+
+/* Top bar style */
+.topBar {
+  display: flex;
+  justify-content: space-evenly;
+  background-color: #2a2a3d;
+  padding: 12px 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(0,255,200,0.1);
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.topBar a {
+  color: #00ffc8;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.topBar a:hover {
+  text-decoration: underline;
+}
+
+.topBar span {
+  color: #77ffcc;
+  user-select: text;
+  line-height: 1.4;
+}

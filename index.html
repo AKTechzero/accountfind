@@ -15,100 +15,18 @@
   gtag('config', 'G-FLBD47LGYS');
 </script>
 
-  <!-- Updated CSP to allow Google Analytics -->
+<!-- Updated CSP to allow Google Analytics -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com;">
 
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #1e1e2f;
-      color: #c2ffd2;
-      max-width: 700px;
-      margin: auto;
-      padding: 2em;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,255,200,0.05);
-    }
-
-    h1, h2 {
-      color: #aafaff;
-      border-bottom: 2px dashed #72ffe1;
-      padding-bottom: 5px;
-      text-shadow: 0 0 5px #00ffc8;
-    }
-
-    form {
-      margin-bottom: 2em;
-    }
-
-    input, select, button {
-      padding: 12px;
-      width: 100%;
-      margin-top: 10px;
-      border: none;
-      border-radius: 8px;
-      background-color: #2a2a3d;
-      color: #d8fff7;
-      font-size: 16px;
-      box-shadow: inset 0 0 5px rgba(0,255,255,0.1);
-    }
-
-    input:focus, select:focus {
-      outline: none;
-      box-shadow: 0 0 5px #00ffe7;
-    }
-
-    button {
-      background-color: #00ffc8;
-      color: #002f2f;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    button:hover {
-      background-color: #5fffe0;
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-      color: #afffe3;
-    }
-
-    .note {
-      font-size: 0.85em;
-      color: #77ffcc;
-      margin-top: 20px;
-    }
-
-    .infoBox {
-      background-color: #2e2e42;
-      border-left: 4px solid #00ffc8;
-      padding: 1em;
-      margin-top: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,255,200,0.1);
-    }
-
-    .infoBox a {
-      color: #89ffff;
-      word-break: break-word;
-      display: block;
-      margin-top: 10px;
-      text-decoration: underline;
-    }
-
-    .infoBox code {
-      display: block;
-      margin-top: 5px;
-      font-size: 0.85em;
-      color: #c9f8ff;
-      word-break: break-word;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+  <div class="topBar">
+    <a href="https://aktechzero.github.io/Home/" target="_blank" rel="noopener noreferrer">🏠 Home</a>
+    <span>📧 aktechdeve@protonmail.com</span>
+    <a href="#" onclick="genericSearch()">🌐 Generic Search</a>
+  </div>
 
   <h1>🛡️ AKTechzero OSINT Tool</h1>
   <p>This tool helps you investigate phone numbers and usernames using Google dorking and WhatsApp lookup.</p>
@@ -155,7 +73,8 @@
   </div>
 
   <p class="note">
-    ⚠️ This tool uses only public Google queries and open URLs. No data is stored or scraped.
+    ⚠️ This tool uses only public Google queries and open URLs. No data is stored or scraped.<br>
+    ⚠️ For genericSearch use without country codes for all results.
   </p>
 
   <script>
@@ -200,10 +119,19 @@
       const platform = document.getElementById('platformSelect').value;
       const includeWhatsApp = document.getElementById('checkWhatsApp').checked;
 
-      // Reset displays
+      // Hide all results initially
       document.getElementById('phoneInfo').style.display = 'none';
       document.getElementById('resultLink').style.display = 'none';
       document.getElementById('whatsAppLink').style.display = 'none';
+
+      if (!input) {
+        alert('Please enter a phone number, email, or username.');
+        return;
+      }
+      if (!platform) {
+        alert('Please select a platform.');
+        return;
+      }
 
       const isPhone = input.startsWith('+') && /^\+\d{7,15}$/.test(input);
       const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
@@ -230,14 +158,28 @@
         document.getElementById('infoResult').innerHTML = `🔎 <strong>Input:</strong> ${input}`;
       }
 
-      if (input && platform) {
-        const googleURL = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-        document.getElementById('resultLink').style.display = 'block';
-        document.getElementById('generatedLink').href = googleURL;
-        document.getElementById('linkPreview').textContent = googleURL;
-      }
+      // Generate Google search link
+      const googleURL = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+      document.getElementById('resultLink').style.display = 'block';
+      document.getElementById('generatedLink').href = googleURL;
+      document.getElementById('generatedLink').target = "_blank";
+      document.getElementById('generatedLink').rel = "noopener noreferrer";
+      document.getElementById('linkPreview').textContent = googleURL;
     });
+
+    function genericSearch() {
+      const input = document.getElementById('inputValue').value.trim();
+      if (!input) {
+        alert("Please enter a phone number, email, or username first.");
+        return;
+      }
+
+      const query = input;
+      const url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
   </script>
 
 </body>
 </html>
+
